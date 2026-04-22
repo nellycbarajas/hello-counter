@@ -1,4 +1,5 @@
 [tool.ruff]
+ignore = ["UP017"]
 line-length = 100
 target-version = "py312"
 
