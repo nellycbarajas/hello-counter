@@ -1,4 +1,6 @@
 [tool.ruff]
+# lo que ya tengas aquí
+
 [tool.ruff.lint]
 ignore = ["UP017"]
 line-length = 100
