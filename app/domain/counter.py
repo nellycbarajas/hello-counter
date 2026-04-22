@@ -6,8 +6,8 @@ from ``app.infrastructure``. See project_architecture_profile.md §5.1.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
