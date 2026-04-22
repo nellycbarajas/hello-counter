@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from app.domain.counter import initial, increment
+from app.domain.counter import increment, initial
 
 
 def test_initial_returns_zero():
@@ -29,7 +29,7 @@ def test_increment_rejects_negative():
 
 
 def test_increment_accepts_now():
-    fixed = datetime.datetime(2026, 4, 22, 10, 0, tzinfo=datetime.timezone.utc)
+    fixed = datetime.datetime(2026, 4, 22, 10, 0, tzinfo=datetime.UTC)
     state = increment(7, now=fixed)
     assert state.value == 8
     assert state.updated_at == fixed.isoformat()
