@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "planned": {
+    "validation_cycle_days": 1,
+    "failure_injection_tests_pass_rate": 1.0,
+    "rollback_success_rate": 1.0,
+    "test_coverage_floor_percent": 80
+  },
+  "actual": {
+    "validation_cycle_days": null,
+    "failure_injection_tests_pass_rate": null,
+    "rollback_success_rate": null,
+    "test_coverage_percent": null,
+    "deploy_frequency_per_week": null,
+    "change_failure_rate_percent": null,
+    "mttr_minutes": null
+  }
+}

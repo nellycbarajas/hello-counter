@@ -1,0 +1,203 @@
+# hello-counter — CI/CD pipeline.
+# Scaffolded from /esencIA/templates/pipelines/github-actions-base.yml.
+# Implements DEVOPS_POLICY.md §5 (build · lint · test · security · package)
+# plus dev / staging / production deploy jobs.
+
+name: ci-cd
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ────────────────────────── 1. BUILD ──────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Install deps (strict)
+        run: |
+          pip install -r requirements-dev.txt
+          python -c "import fastapi, uvicorn, pytest"
+      - name: Verify app imports
+        run: python -c "from app.main import app; print('import OK:', app.title)"
+
+  # ────────────────────────── 2. LINT ───────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: "pip" }
+      - run: pip install -r requirements-dev.txt
+      - name: Style + type checks
+        run: |
+          ruff check .
+          mypy app/
+      - name: Architecture fitness
+        run: pytest tests/test_architecture_fitness.py -q
+
+  # ────────────────────────── 3. TEST ───────────────────────────
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: "pip" }
+      - run: pip install -r requirements-dev.txt
+      - name: Unit + integration tests
+        run: pytest --cov=app --cov-report=xml --cov-report=term
+      - name: Enforce coverage floor (≥ 80%)
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET, sys
+          r = float(ET.parse('coverage.xml').getroot().get('line-rate'))
+          pct = r * 100
+          print(f"coverage: {pct:.1f}%")
+          sys.exit(0 if pct >= 80 else 1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  # ──────────────────────── 4. SECURITY ─────────────────────────
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: "pip" }
+      - run: pip install pip-audit
+      - name: SCA (pip-audit)
+        run: pip-audit --requirement requirements.txt --strict
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-path: .gitleaks.toml
+
+  # ──────────────────────── 5. PACKAGE ──────────────────────────
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.tag.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compute tag
+        id: tag
+        run: echo "image_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - name: Log in to GHCR
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+      - name: Build and push image
+        run: |
+          docker build \
+            --build-arg APP_VERSION=${{ steps.tag.outputs.image_tag }} \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.image_tag }} \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.image_tag }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.image_tag }}
+          severity: "HIGH,CRITICAL"
+          exit-code: "1"
+
+  # ────────────────────── DEPLOY: DEV ──────────────────────────
+  deploy-dev:
+    name: Deploy to dev
+    runs-on: ubuntu-latest
+    needs: [package]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: dev
+      url: https://dev.hello-counter.internal
+    steps:
+      - name: Deploy
+        env:
+          IMAGE_TAG: ${{ needs.package.outputs.image_tag }}
+          DEPLOY_KEY: ${{ secrets.DEV_DEPLOY_SSH_KEY }}
+        run: |
+          echo "Deploying tag $IMAGE_TAG to dev ..."
+          # ssh dev-host "docker pull $REGISTRY/$IMAGE_NAME:$IMAGE_TAG && \
+          #               docker compose -f /opt/hello-counter/docker-compose.yml up -d"
+      - name: Smoke test
+        run: |
+          echo "Smoke test — replace with: curl -fsS https://dev.hello-counter.internal/health"
+
+  # ──────────────────── DEPLOY: STAGING ────────────────────────
+  deploy-staging:
+    name: Deploy to staging
+    runs-on: ubuntu-latest
+    needs: [deploy-dev]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: staging
+      url: https://staging.hello-counter.internal
+    steps:
+      - name: Deploy
+        env:
+          IMAGE_TAG: ${{ needs.package.outputs.image_tag }}
+        run: |
+          echo "Deploying tag $IMAGE_TAG to staging ..."
+      - name: E2E smoke
+        run: |
+          echo "E2E — replace with: curl -fsS https://staging.hello-counter.internal/health"
+
+  # ─────────────────── DEPLOY: PRODUCTION ──────────────────────
+  deploy-production:
+    name: Deploy to production (manual)
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: production          # required-reviewer gate configured in repo settings
+      url: https://hello-counter.internal
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        env:
+          IMAGE_TAG: ${{ needs.package.outputs.image_tag }}
+        run: |
+          echo "Deploying tag $IMAGE_TAG to production ..."
+      - name: Post-deploy smoke
+        id: smoke
+        run: |
+          echo "Smoke — replace with: curl -fsS https://hello-counter.internal/health"
+      - name: Rollback on smoke failure
+        if: failure() && steps.smoke.conclusion == 'failure'
+        run: |
+          echo "Smoke failed — rolling back to previous release tag ..."
+          # ssh prod-host "docker pull $REGISTRY/$IMAGE_NAME:$(cat /opt/hello-counter/.previous_tag) && \
+          #               docker compose -f /opt/hello-counter/docker-compose.yml up -d"

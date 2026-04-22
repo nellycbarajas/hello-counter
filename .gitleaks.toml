@@ -1,0 +1,10 @@
+# gitleaks config — default rules only. Reject any AWS/GCP key, private
+# keys, and generic high-entropy tokens.
+
+title = "hello-counter gitleaks"
+
+[allowlist]
+description = "Fixtures used by DevOps validation that intentionally contain AWS example keys"
+paths = [
+  '''tmp-secret\.txt$''',
+]

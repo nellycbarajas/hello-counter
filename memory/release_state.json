@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0",
+  "current_release": {
+    "number": 1,
+    "name": "Release 1 — Counter MVP",
+    "goal": "Ship the minimum counter service end-to-end through the governed pipeline.",
+    "status": "PLANNING_COMPLETE",
+    "target_date": "2026-04-29",
+    "stories": [
+      {
+        "id": "R1-S01",
+        "title": "GET /count returns current value",
+        "narrative": "As a platform operator, I want to fetch the current counter value so that I can see the starting state and observe changes over time.",
+        "acceptance_criteria": [
+          "GET /count returns 200 with JSON `{\"value\": <int>}`",
+          "Fresh database seed returns `{\"value\": 0}`",
+          "Response arrives in under 300ms in dev",
+          "Unit test covers happy path and missing row"
+        ],
+        "priority": "MUST",
+        "points": 2,
+        "complexity": "LOW",
+        "risk": "LOW",
+        "confidence": "HIGH"
+      },
+      {
+        "id": "R1-S02",
+        "title": "POST /increment increments and returns new value",
+        "narrative": "As a platform operator, I want to increment the counter via HTTP so that the frontend can trigger state change.",
+        "acceptance_criteria": [
+          "POST /increment returns 200 with `{\"value\": <int>}`",
+          "Two sequential increments return values that differ by exactly 1",
+          "Concurrent increments do not lose updates (SQLite transaction)",
+          "Response includes `updated_at` timestamp"
+        ],
+        "priority": "MUST",
+        "points": 3,
+        "complexity": "LOW",
+        "risk": "LOW",
+        "confidence": "HIGH"
+      },
+      {
+        "id": "R1-S03",
+        "title": "Single-page UI reads and increments",
+        "narrative": "As a platform operator, I want a UI that shows the counter and has a button to increment so that I can exercise the full stack manually.",
+        "acceptance_criteria": [
+          "UI loads at `/` served by FastAPI static",
+          "Counter value rendered on page load",
+          "`+1` button calls POST /increment and updates the display",
+          "Error toast appears on network failure; button re-enables",
+          "Meets WCAG AA keyboard navigation and ARIA"
+        ],
+        "priority": "MUST",
+        "points": 3,
+        "complexity": "LOW",
+        "risk": "LOW",
+        "confidence": "HIGH"
+      }
+    ]
+  },
+  "release_history": []
+}

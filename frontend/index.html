@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hello-counter</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="center">
+    <section class="card" aria-labelledby="counter-label">
+      <p id="counter-label" class="caption">Counter</p>
+      <p
+        id="counter-value"
+        class="display"
+        aria-live="polite"
+        data-numeric
+      >—</p>
+      <button
+        id="increment-btn"
+        class="primary"
+        type="button"
+        aria-label="Increment counter"
+      >+1</button>
+    </section>
+
+    <div id="toast" class="toast" role="alert" aria-live="assertive" hidden>
+      <span id="toast-msg"></span>
+      <button id="toast-dismiss" type="button" aria-label="Dismiss">×</button>
+    </div>
+  </main>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

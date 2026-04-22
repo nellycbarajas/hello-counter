@@ -1,0 +1,16 @@
+services:
+  hello-counter:
+    build: .
+    image: hello-counter:local
+    container_name: hello-counter
+    ports:
+      - "8000:8000"
+    volumes:
+      - counter-data:/data
+    environment:
+      APP_VERSION: "local"
+      ENVIRONMENT: "dev"
+    restart: unless-stopped
+
+volumes:
+  counter-data:

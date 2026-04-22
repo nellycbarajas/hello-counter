@@ -1,0 +1,10 @@
+{
+  "project_name": "hello-counter",
+  "slug": "hello-counter",
+  "description": "Minimal counter API + UI; end-to-end validation project for esencIA.",
+  "owner": "platform",
+  "created_at": "2026-04-22",
+  "brief_locked": true,
+  "schema_version": "1.0",
+  "esencia_version": "1.0"
+}

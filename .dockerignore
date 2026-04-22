@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+tests/
+memory/
+.github/
+*.md
+.git/
+.gitignore
+.gitleaks.toml
+docker-compose.yml
+pytest.ini
+pyproject.toml
+requirements-dev.txt
+counter.db

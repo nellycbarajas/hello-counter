@@ -1,0 +1,103 @@
+:root {
+  --teal: #1BAFBF;
+  --teal-dark: #0E8A97;
+  --ink-primary: #5A5F63;
+  --ink-secondary: #8A8F93;
+  --surface: #FFFFFF;
+  --surface-alt: #F5F7FA;
+  --border: #E3E6EA;
+  --error-bg: #FDEDEC;
+  --error-fg: #B9382F;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--surface-alt);
+  color: var(--ink-primary);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+[data-numeric] { font-variant-numeric: tabular-nums; }
+
+.center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 1px 2px rgba(15, 20, 30, 0.04), 0 1px 1px rgba(15, 20, 30, 0.03);
+  text-align: center;
+  min-width: 16rem;
+}
+
+.caption {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-secondary);
+}
+
+.display {
+  margin: 0.5rem 0 1.75rem;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink-primary);
+}
+
+.primary {
+  background: var(--teal);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 120ms ease-out;
+}
+.primary:hover:not(:disabled) { background: var(--teal-dark); }
+.primary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+.primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--error-bg);
+  color: var(--error-fg);
+  border: 1px solid var(--error-fg);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.toast[hidden] { display: none; }
+.toast button {
+  background: transparent;
+  color: inherit;
+  border: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
