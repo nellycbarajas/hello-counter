@@ -1,7 +1,6 @@
 """Pure counter logic. Framework-agnostic; no imports from FastAPI or sqlite.
 
 Architecture-fitness check (lint stage) verifies this module never imports
-from ``app.infrastructure``. See project_architecture_profile.md §5.1.
 """
 
 from __future__ import annotations
