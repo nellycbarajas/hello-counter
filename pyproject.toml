@@ -1,22 +1,16 @@
 ﻿[tool.ruff]
-# lo que ya tengas aquÃ­
 line-length = 100
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B"]
-ignore = ["E501"]
+ignore = ["UP017"]
 
-[tool.mypy]
-python_version = "3.12"
-strict = true
-ignore_missing_imports = true
+[tool.pytest.ini_options]
+addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["app"]
-omit = ["tests/*"]
+branch = true
 
 [tool.coverage.report]
 fail_under = 80
 show_missing = true
-
