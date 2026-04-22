@@ -30,7 +30,7 @@ def test_increment_is_monotonic():
 
 
 def test_increment_accepts_now():
-    fixed = datetime(2026, 4, 22, 10, 0, tzinfo=datetime.UTC)
+    fixed = datetime(2026, 4, 22, 10, 0, tzinfo=datetime.UTC) 
     state = increment(7, now=fixed)
     assert state.value == 8
     assert state.updated_at == fixed.isoformat()
