@@ -1,4 +1,4 @@
-"""Pure domain tests — no framework, no filesystem, no network."""
+﻿"""Pure domain tests — no framework, no filesystem, no network."""
 
 import datetime
 

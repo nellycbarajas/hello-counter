@@ -1,8 +1,7 @@
-[tool.ruff]
-# lo que ya tengas aquí
+﻿[tool.ruff]
+# lo que ya tengas aquÃ­
 
 [tool.ruff.lint]
-ignore = ["UP017"]
 line-length = 100
 target-version = "py312"
 
@@ -22,3 +21,4 @@ omit = ["tests/*"]
 [tool.coverage.report]
 fail_under = 80
 show_missing = true
+

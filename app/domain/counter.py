@@ -1,4 +1,4 @@
-"""Pure counter logic. Framework-agnostic; no imports from FastAPI or sqlite.
+﻿"""Pure counter logic. Framework-agnostic; no imports from FastAPI or sqlite.
 
 Architecture-fitness check (lint stage) verifies this module never imports
 infrastructure dependencies.
