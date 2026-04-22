@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 @dataclass(frozen=True)
 class CounterState:
     value: int
-    updated_at: str
+    updated_at: str 
 
 
 def increment(current: int, now: datetime | None = None) -> CounterState:
