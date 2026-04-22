@@ -13,9 +13,12 @@ def temp_db(monkeypatch):
     os.close(fd)
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{path}")
     monkeypatch.setenv("ENVIRONMENT", "test")
+
     # Re-import module-level state so settings pick up the env.
     import importlib
+
     import app.main
+
     importlib.reload(app.main)
     yield
     os.remove(path)
@@ -24,6 +27,7 @@ def temp_db(monkeypatch):
 @pytest.fixture
 def client():
     from app.main import app
+
     return TestClient(app)
 
 

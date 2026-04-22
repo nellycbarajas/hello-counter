@@ -20,7 +20,7 @@ def increment(current: int, now: datetime | None = None) -> CounterState:
     if current < 0:
         raise ValueError("Counter value must be non-negative.")
     new_value = current + 1
-    ts = (now or datetime.now(timezone.utc)).isoformat()
+    ts = (now or datetime.now(datetime.UTC)).isoformat()
     return CounterState(value=new_value, updated_at=ts)
 
 
