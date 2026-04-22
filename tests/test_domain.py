@@ -1,6 +1,6 @@
 """Pure domain tests — no framework, no filesystem, no network."""
 
-from datetime import datetime
+from datetime
 
 import pytest
 
