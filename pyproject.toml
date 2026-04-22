@@ -1,7 +1,5 @@
 ﻿[tool.ruff]
 # lo que ya tengas aquÃ­
-
-[tool.ruff.lint]
 line-length = 100
 target-version = "py312"
 
