@@ -7,7 +7,7 @@ from ``app.infrastructure``. See project_architecture_profile.md §5.1.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 @dataclass(frozen=True)
