@@ -27,12 +27,12 @@ app = FastAPI(
 
 
 @app.get("/count")
-def get_count() -> dict:
+def get_count() -> dict[str, int]:
     return {"value": repo.get_value()}
 
 
 @app.post("/increment")
-def post_increment() -> dict:
+def post_increment() -> dict[str, int | str]:
     current = repo.get_value()
     next_state = increment(current)
     repo.increment(next_state.value, next_state.updated_at)
